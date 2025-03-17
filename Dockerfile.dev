@@ -1,0 +1,22 @@
+FROM python:3.13-slim
+LABEL maintainer="hussnainmulazam@gmail.com"
+
+# Install Poetry
+RUN pip install poetry
+
+# Set the working directory
+WORKDIR /app
+
+# Copy only dependency files to leverage Docker cache
+COPY pyproject.toml poetry.lock ./
+
+# Install dependencies
+RUN poetry install --no-root
+# Copy the rest of the application code
+COPY . .
+
+# Expose the port
+EXPOSE 8000
+
+# Run the application
+CMD ["poetry", "run", "uvicorn", "fproject.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
